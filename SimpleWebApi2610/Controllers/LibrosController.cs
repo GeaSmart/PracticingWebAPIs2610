@@ -20,15 +20,39 @@ namespace SimpleWebApi2610.Controllers
         }
 
         [HttpGet]
+        [HttpGet("listado")]
+        [HttpGet("/milistado")]
         public async Task<ActionResult<List<Libro>>> Get()
         {
             return await context.Libros.ToListAsync();
         }
 
+        [HttpGet("primero")]        
+        public async Task<ActionResult<Libro>> GetFirst()
+        {
+            return await context.Libros.FirstOrDefaultAsync();
+        }
+
         [HttpGet("{id:int}")]
         public async Task<ActionResult<Libro>> Get(int id)
         {
-            return await context.Libros.Include(x => x.Autor).FirstOrDefaultAsync(x => x.Id == id);
+            var libro = await context.Libros.Include(x => x.Autor).FirstOrDefaultAsync(x => x.Id == id);
+
+            if (libro == null)
+                return NotFound();
+
+            return libro;
+        }
+
+        [HttpGet("{titulo}")]
+        public async Task<ActionResult<Libro>> Get(string titulo)
+        {
+            var libro = await context.Libros.Include(x => x.Autor).FirstOrDefaultAsync(x => x.Titulo.Contains(titulo));
+
+            if (libro == null)
+                return NotFound();
+
+            return libro;
         }
 
         [HttpPost]
