@@ -15,5 +15,6 @@ namespace SimpleWebApi2610
         }
 
         public DbSet<Autor> Autores { get; set; }
+        public DbSet<Libro> Libros { get; set; }
     }
 }

@@ -5,12 +5,13 @@ using System.Threading.Tasks;
 
 namespace SimpleWebApi2610.Entidades
 {
-    public class Autor
+    public class Libro
     {
         public int Id { get; set; }
-        public string Nombre { get; set; }
+        public string Titulo { get; set; }
+        public int AutorId { get; set; }
 
         //Propiedad de navegacion
-        public List<Libro> Libros { get; set; }
+        public Autor Autor { get; set; }
     }
 }
