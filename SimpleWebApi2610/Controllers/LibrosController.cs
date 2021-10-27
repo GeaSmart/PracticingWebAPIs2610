@@ -22,9 +22,9 @@ namespace SimpleWebApi2610.Controllers
         [HttpGet]
         [HttpGet("listado")]
         [HttpGet("/milistado")]
-        public async Task<ActionResult<List<Libro>>> Get()
+        public async Task<IActionResult> Get() //también se puede devolver Task<ActionResult<List<Libro>>>
         {
-            return await context.Libros.ToListAsync();
+            return Ok(await context.Libros.ToListAsync());
         }
 
         [HttpGet("primero")]        
@@ -44,10 +44,21 @@ namespace SimpleWebApi2610.Controllers
             return libro;
         }
 
-        [HttpGet("{titulo}")]
-        public async Task<ActionResult<Libro>> Get(string titulo)
+        [HttpGet("{titulo}/{adicional}")]
+        public async Task<ActionResult<Libro>> Get(string titulo, string adicional)
         {
             var libro = await context.Libros.Include(x => x.Autor).FirstOrDefaultAsync(x => x.Titulo.Contains(titulo));
+
+            if (libro == null)
+                return NotFound();
+
+            return libro;
+        }
+
+        [HttpGet("{opcional?}")]
+        public async Task<ActionResult<Libro>> GetOpcional(string opcional = "blank")
+        {
+            var libro = await context.Libros.Include(x => x.Autor).FirstOrDefaultAsync(x => x.Titulo.Contains(opcional));
 
             if (libro == null)
                 return NotFound();
