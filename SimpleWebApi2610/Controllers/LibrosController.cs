@@ -20,54 +20,30 @@ namespace SimpleWebApi2610.Controllers
         }
 
         [HttpGet]
-        [HttpGet("listado")]
-        [HttpGet("/milistado")]
         public async Task<IActionResult> Get() //también se puede devolver Task<ActionResult<List<Libro>>>
         {
             return Ok(await context.Libros.ToListAsync());
         }
 
-        [HttpGet("primero")]        
-        public async Task<ActionResult<Libro>> GetFirst()
+        [HttpGet("{id:int}")]        
+        public async Task<ActionResult<Libro>> GetTest([FromRoute]int id, [FromHeader] string header, [FromQuery]string query,[FromQuery]string query2)
         {
             return await context.Libros.FirstOrDefaultAsync();
         }
 
-        [HttpGet("{id:int}")]
-        public async Task<ActionResult<Libro>> Get(int id)
-        {
-            var libro = await context.Libros.Include(x => x.Autor).FirstOrDefaultAsync(x => x.Id == id);
+        //[HttpGet("{id:int}")]
+        //public async Task<ActionResult<Libro>> Get([FromRoute] int id)
+        //{
+        //    var libro = await context.Libros.Include(x => x.Autor).FirstOrDefaultAsync(x => x.Id == id);
 
-            if (libro == null)
-                return NotFound();
+        //    if (libro == null)
+        //        return NotFound();
 
-            return libro;
-        }
-
-        [HttpGet("{titulo}/{adicional}")]
-        public async Task<ActionResult<Libro>> Get(string titulo, string adicional)
-        {
-            var libro = await context.Libros.Include(x => x.Autor).FirstOrDefaultAsync(x => x.Titulo.Contains(titulo));
-
-            if (libro == null)
-                return NotFound();
-
-            return libro;
-        }
-
-        [HttpGet("{opcional?}")]
-        public async Task<ActionResult<Libro>> GetOpcional(string opcional = "blank")
-        {
-            var libro = await context.Libros.Include(x => x.Autor).FirstOrDefaultAsync(x => x.Titulo.Contains(opcional));
-
-            if (libro == null)
-                return NotFound();
-
-            return libro;
-        }
+        //    return libro;
+        //}        
 
         [HttpPost]
-        public async Task<ActionResult> Post(Libro libro)
+        public async Task<ActionResult> Post([FromBody]Libro libro)
         {
             var existeAutor = await context.Autores.AnyAsync(x => x.Id == libro.AutorId);
             if (!existeAutor)
