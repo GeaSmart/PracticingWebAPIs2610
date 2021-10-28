@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using SimpleWebApi2610.Entidades;
 using System;
 using System.Collections.Generic;
@@ -13,15 +14,19 @@ namespace SimpleWebApi2610.Controllers
     public class LibrosController : Controller
     {
         private readonly ApplicationDBContext context;
+        private readonly ILogger logger;
 
-        public LibrosController(ApplicationDBContext context)
+        public LibrosController(ApplicationDBContext context,ILogger<AutoresController> logger)
         {
             this.context = context;
+            this.logger = logger;
         }
 
         [HttpGet]
         public async Task<IActionResult> Get() //también se puede devolver Task<ActionResult<List<Libro>>>
         {
+            logger.LogInformation("Information - Trayendo todos los registros");
+            logger.LogCritical("Critical - Mensaje crítico");
             return Ok(await context.Libros.ToListAsync());
         }
 
@@ -48,6 +53,10 @@ namespace SimpleWebApi2610.Controllers
             var existeAutor = await context.Autores.AnyAsync(x => x.Id == libro.AutorId);
             if (!existeAutor)
                 return NotFound($"no existe el autor con id {libro.AutorId}");
+
+            var existeAutorMismoNombre = await context.Libros.AnyAsync(x => x.Titulo == libro.Titulo);
+            if (existeAutorMismoNombre)
+                return BadRequest("Ya existe un libro con el mismo título");
 
             await context.Libros.AddAsync(libro);
             await context.SaveChangesAsync();

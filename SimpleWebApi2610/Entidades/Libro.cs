@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SimpleWebApi2610.Entidades
 {
-    public class Libro
+    public class Libro : IValidatableObject
     {
         public int Id { get; set; }
         [Required(ErrorMessage = "El campo {0} es requerido.")]
@@ -32,11 +32,21 @@ namespace SimpleWebApi2610.Entidades
         [EmailAddress]
         public string Email { get; set; }
 
+        [NotMapped]
+        public int Menor { get; set; }
 
+        [NotMapped]
+        public int Mayor { get; set; }
 
         public int AutorId { get; set; }
 
         //Propiedad de navegacion
         public Autor Autor { get; set; }
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (Menor > Mayor)
+                yield return new ValidationResult("El campo menor debe ser menor o igual al campo mayor.", new string[] { nameof(Menor) });
+        }
     }
 }
